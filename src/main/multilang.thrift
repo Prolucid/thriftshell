@@ -14,6 +14,9 @@
 namespace java com.prolucid.thriftshell.messages
 namespace csharp Prolucid.ThriftShell.Messages
 
+struct NoneStruct {
+}
+
 union Variant {
 	1: string  strVal;
 	2: i32     int32Val;
@@ -24,6 +27,7 @@ union Variant {
 	7: bool	   boolVal;
 	8: string  iso8601Val;
 	9: binary  bytesVal;
+	10:NoneStruct none;
 }
 
 struct Context {

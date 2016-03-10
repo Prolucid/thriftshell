@@ -45,6 +45,7 @@ public class Variant extends org.apache.thrift.TUnion<Variant, Variant._Fields> 
   private static final org.apache.thrift.protocol.TField BOOL_VAL_FIELD_DESC = new org.apache.thrift.protocol.TField("boolVal", org.apache.thrift.protocol.TType.BOOL, (short)7);
   private static final org.apache.thrift.protocol.TField ISO8601_VAL_FIELD_DESC = new org.apache.thrift.protocol.TField("iso8601Val", org.apache.thrift.protocol.TType.STRING, (short)8);
   private static final org.apache.thrift.protocol.TField BYTES_VAL_FIELD_DESC = new org.apache.thrift.protocol.TField("bytesVal", org.apache.thrift.protocol.TType.STRING, (short)9);
+  private static final org.apache.thrift.protocol.TField NONE_FIELD_DESC = new org.apache.thrift.protocol.TField("none", org.apache.thrift.protocol.TType.STRUCT, (short)10);
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -56,7 +57,8 @@ public class Variant extends org.apache.thrift.TUnion<Variant, Variant._Fields> 
     BYTE_VAL((short)6, "byteVal"),
     BOOL_VAL((short)7, "boolVal"),
     ISO8601_VAL((short)8, "iso8601Val"),
-    BYTES_VAL((short)9, "bytesVal");
+    BYTES_VAL((short)9, "bytesVal"),
+    NONE((short)10, "none");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -89,6 +91,8 @@ public class Variant extends org.apache.thrift.TUnion<Variant, Variant._Fields> 
           return ISO8601_VAL;
         case 9: // BYTES_VAL
           return BYTES_VAL;
+        case 10: // NONE
+          return NONE;
         default:
           return null;
       }
@@ -149,6 +153,8 @@ public class Variant extends org.apache.thrift.TUnion<Variant, Variant._Fields> 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.BYTES_VAL, new org.apache.thrift.meta_data.FieldMetaData("bytesVal", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING        , true)));
+    tmpMap.put(_Fields.NONE, new org.apache.thrift.meta_data.FieldMetaData("none", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, NoneStruct.class)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(Variant.class, metaDataMap);
   }
@@ -228,6 +234,12 @@ public class Variant extends org.apache.thrift.TUnion<Variant, Variant._Fields> 
     return x;
   }
 
+  public static Variant none(NoneStruct value) {
+    Variant x = new Variant();
+    x.setNone(value);
+    return x;
+  }
+
 
   @Override
   protected void checkType(_Fields setField, Object value) throws ClassCastException {
@@ -277,6 +289,11 @@ public class Variant extends org.apache.thrift.TUnion<Variant, Variant._Fields> 
           break;
         }
         throw new ClassCastException("Was expecting value of type ByteBuffer for field 'bytesVal', but got " + value.getClass().getSimpleName());
+      case NONE:
+        if (value instanceof NoneStruct) {
+          break;
+        }
+        throw new ClassCastException("Was expecting value of type NoneStruct for field 'none', but got " + value.getClass().getSimpleName());
       default:
         throw new IllegalArgumentException("Unknown field id " + setField);
     }
@@ -368,6 +385,16 @@ public class Variant extends org.apache.thrift.TUnion<Variant, Variant._Fields> 
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, field.type);
             return null;
           }
+        case NONE:
+          if (field.type == NONE_FIELD_DESC.type) {
+            NoneStruct none;
+            none = new NoneStruct();
+            none.read(iprot);
+            return none;
+          } else {
+            org.apache.thrift.protocol.TProtocolUtil.skip(iprot, field.type);
+            return null;
+          }
         default:
           throw new IllegalStateException("setField wasn't null, but didn't match any of the case statements!");
       }
@@ -416,6 +443,10 @@ public class Variant extends org.apache.thrift.TUnion<Variant, Variant._Fields> 
         ByteBuffer bytesVal = (ByteBuffer)value_;
         oprot.writeBinary(bytesVal);
         return;
+      case NONE:
+        NoneStruct none = (NoneStruct)value_;
+        none.write(oprot);
+        return;
       default:
         throw new IllegalStateException("Cannot write union with unknown field " + setField_);
     }
@@ -462,6 +493,11 @@ public class Variant extends org.apache.thrift.TUnion<Variant, Variant._Fields> 
           ByteBuffer bytesVal;
           bytesVal = iprot.readBinary();
           return bytesVal;
+        case NONE:
+          NoneStruct none;
+          none = new NoneStruct();
+          none.read(iprot);
+          return none;
         default:
           throw new IllegalStateException("setField wasn't null, but didn't match any of the case statements!");
       }
@@ -509,6 +545,10 @@ public class Variant extends org.apache.thrift.TUnion<Variant, Variant._Fields> 
         ByteBuffer bytesVal = (ByteBuffer)value_;
         oprot.writeBinary(bytesVal);
         return;
+      case NONE:
+        NoneStruct none = (NoneStruct)value_;
+        none.write(oprot);
+        return;
       default:
         throw new IllegalStateException("Cannot write union with unknown field " + setField_);
     }
@@ -535,6 +575,8 @@ public class Variant extends org.apache.thrift.TUnion<Variant, Variant._Fields> 
         return ISO8601_VAL_FIELD_DESC;
       case BYTES_VAL:
         return BYTES_VAL_FIELD_DESC;
+      case NONE:
+        return NONE_FIELD_DESC;
       default:
         throw new IllegalArgumentException("Unknown field id " + setField);
     }
@@ -685,6 +727,20 @@ public class Variant extends org.apache.thrift.TUnion<Variant, Variant._Fields> 
     value_ = value;
   }
 
+  public NoneStruct getNone() {
+    if (getSetField() == _Fields.NONE) {
+      return (NoneStruct)getFieldValue();
+    } else {
+      throw new RuntimeException("Cannot get field 'none' because union is currently set to " + getFieldDesc(getSetField()).name);
+    }
+  }
+
+  public void setNone(NoneStruct value) {
+    if (value == null) throw new NullPointerException();
+    setField_ = _Fields.NONE;
+    value_ = value;
+  }
+
   public boolean isSetStrVal() {
     return setField_ == _Fields.STR_VAL;
   }
@@ -727,6 +783,11 @@ public class Variant extends org.apache.thrift.TUnion<Variant, Variant._Fields> 
 
   public boolean isSetBytesVal() {
     return setField_ == _Fields.BYTES_VAL;
+  }
+
+
+  public boolean isSetNone() {
+    return setField_ == _Fields.NONE;
   }
 
 

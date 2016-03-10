@@ -38,6 +38,7 @@ public class ThriftSerializer implements ISerializer {
     public static Logger LOG = Logger.getLogger(ThriftSerializer.class);
 	private TProtocol processIn;
 	private TProtocol processOut;
+	private static NoneStruct none = new NoneStruct();
 
 	public void initialize(OutputStream processIn, InputStream processOut) {
 		this.processIn = new TCompactProtocol(new TIOStreamTransport(processIn));
@@ -56,8 +57,6 @@ public class ThriftSerializer implements ISerializer {
             v.setBoolVal((Boolean)o);
         } else if(o instanceof Double) {
             v.setDoubleVal((Double)o);
-        } else if(o instanceof byte[]) {
-            v.setBytesVal((byte[])o);
         } else if(o instanceof Byte) {
             v.setByteVal((Byte)o);
         } else if(o instanceof Integer) {
@@ -68,7 +67,11 @@ public class ThriftSerializer implements ISerializer {
             v.setStrVal((String)o);
         } else if(o instanceof DateTime) {
             v.setIso8601Val(((DateTime)o).toString(ISODateTimeFormat.dateTime()));
-        }
+		} else if(o instanceof byte[]) {
+			v.setBytesVal((byte[])o);
+        } else {
+			v.setNone(none);
+		}
         return v;
     }
 
