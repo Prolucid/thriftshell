@@ -1,4 +1,4 @@
-#ThriftShell
+#ThriftShell [![Build status:](https://travis-ci.org/Prolucid/thriftshell.svg?branch=master)](https://travis-ci.org/Prolucid/thriftshell)
 Loosely based on [Protoshell](https://github.com/jsgilmore/protoshell)
 
 ThriftShell implements Storm's multilang using Thrift serializer to improve throughput and decrease CPU when compared to default JSON serializer.
