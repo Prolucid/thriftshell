@@ -43,11 +43,11 @@ struct Handshake {
 }
 
 struct StreamIn {
-	1: string id;
-	2: string comp;
-	4: string stream;
-	5: i32 task;
-	6: list<Variant> tuple;
+	1: required string id;
+	2: required string comp;
+	3: required string stream;
+	4: required i32 task;
+	5: required list<Variant> tuple;
 }
 
 struct TaskIdsReply {
@@ -104,15 +104,20 @@ enum LogLevel {
 }
 
 struct LogCommand {
-	1: string message;
-	2: LogLevel level;
+	1: required string message;
+	2: required LogLevel level;
 }
 
 struct PidReply {
-	1: i32 pid;
+	1: required i32 pid;
 }
 
 struct SyncReply {
+}
+
+struct Metric {
+    1: required string name;
+    2: required list<Variant> params;
 }
 
 union ShellMsg {
@@ -122,4 +127,5 @@ union ShellMsg {
     4: PidReply pid;
     5: LogCommand log;
     6: SyncReply sync;
+    7: Metric metric;
 }

@@ -12,9 +12,7 @@
 
 package com.prolucid.thriftshell;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.*;
 
 import com.prolucid.thriftshell.messages.*;
@@ -30,25 +28,33 @@ import backtype.storm.task.TopologyContext;
 import org.apache.storm.shade.org.joda.time.DateTime;
 import org.apache.storm.shade.org.joda.time.format.ISODateTimeFormat;
 import org.apache.thrift.*;
-import org.apache.thrift.protocol.TCompactProtocol;
+import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.transport.TIOStreamTransport;
 
 public class ThriftSerializer implements ISerializer {
     public static Logger LOG = Logger.getLogger(ThriftSerializer.class);
-	private TProtocol processIn;
-	private TProtocol processOut;
+	private TProtocol protocol;
 	private static NoneStruct none = new NoneStruct();
 
 	public void initialize(OutputStream processIn, InputStream processOut) {
-		this.processIn = new TCompactProtocol(new TIOStreamTransport(processIn));
-        this.processOut = new TCompactProtocol(new TIOStreamTransport(processOut));
+        this.protocol = new TBinaryProtocol(
+				new TIOStreamTransport(
+						new BufferedInputStream(processOut),
+						new BufferedOutputStream(processIn)));
 	}
     
     Object ofVariant(Variant v) {
-        return (v.getSetField() == Variant._Fields.ISO8601_VAL)
-                ? (v.isSetIso8601Val() ? new DateTime(v.getIso8601Val()) : null)
-                : v.getFieldValue();
+		switch (v.getSetField()) {
+			case ISO8601_VAL:
+				return (v.isSetIso8601Val() ? new DateTime(v.getIso8601Val()) : null);
+			case BYTES_VAL:
+				return (v.isSetBytesVal() ? v.getBytesVal() : null);
+			case NONE:
+				return null;
+			default:
+				return v.getFieldValue();
+		}
     }
     
     Variant toVariant(Object o) {
@@ -84,18 +90,22 @@ public class ThriftSerializer implements ISerializer {
         return varMap;
     }
 
+	private String compPid;
+
 	public Number connect(Map conf, TopologyContext context) throws IOException, NoOutputException {
         Context ctx = new Context(context.getThisTaskId(),context.getTaskToComponent(),context.getThisComponentId());
-		Handshake handshake = new Handshake(context.getPIDDir(),ctx,toVariantMap(conf));
+		StormMsg outMsg = new StormMsg();
+		outMsg.setHandshake(new Handshake(context.getPIDDir(),ctx,toVariantMap(conf)));
 
         LOG.info("Writing configuration to shell component");
-        writeMessage(handshake);
+        writeMessage(outMsg);
 
         LOG.info("Waiting for pid from component");
-		com.prolucid.thriftshell.messages.ShellMsg msg = new com.prolucid.thriftshell.messages.ShellMsg();
-        readMessage(msg);
+		com.prolucid.thriftshell.messages.ShellMsg inMsg = new com.prolucid.thriftshell.messages.ShellMsg();
+        readMessage(inMsg);
         LOG.info("Shell component connection established.");
-        return msg.getPid().getPid();
+		this.compPid = "["+context.getThisComponentId() + "@" +inMsg.getPid().getPid()+"]: ";
+        return inMsg.getPid().getPid();
 	}
 
 	public ShellMsg readShellMsg() throws IOException, NoOutputException {
@@ -160,6 +170,8 @@ public class ThriftSerializer implements ISerializer {
 			stormMsg.setAckCmd(new AckCommand(msg.getId().toString()));
 		} else if (msg.getCommand() == "fail") {
 			stormMsg.setNackCmd(new NackCommand(msg.getId().toString()));
+		} else {
+			throw new IOException(this.compPid+"Unexpected spout message: "+msg.getCommand()	);
 		}
         writeMessage(stormMsg);
 	}
@@ -170,20 +182,21 @@ public class ThriftSerializer implements ISerializer {
         writeMessage(msg);
 	}
 
-	private void writeMessage(TBase msg) throws IOException {
+	private void writeMessage(StormMsg msg) throws IOException {
         try {
-			msg.write(processIn);
-            processIn.getTransport().flush();
+			if(LOG.isDebugEnabled()) LOG.debug(this.compPid+"Sending: "+msg);
+			msg.write(protocol);
+            protocol.getTransport().flush();
 		} catch (TException x) {
-			throw new IOException("Unable to serialize",x);
+			throw new IOException(this.compPid+"Unable to write a message: "+x.getMessage(),x);
 		}
     }
 
-	private void readMessage(TBase msg) throws IOException {
+	private void readMessage(com.prolucid.thriftshell.messages.ShellMsg msg) throws IOException {
 		try {
-			msg.read(processOut);
+			msg.read(protocol);
 		} catch (TException x) {
-			throw new IOException("Unable to deserialize",x);
+			throw new IOException(this.compPid+"Unable to read a message: "+x.getMessage(),x);
 		}
     }
 }

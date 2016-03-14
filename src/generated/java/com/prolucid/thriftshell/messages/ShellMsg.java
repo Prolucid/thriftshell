@@ -42,6 +42,7 @@ public class ShellMsg extends org.apache.thrift.TUnion<ShellMsg, ShellMsg._Field
   private static final org.apache.thrift.protocol.TField PID_FIELD_DESC = new org.apache.thrift.protocol.TField("pid", org.apache.thrift.protocol.TType.STRUCT, (short)4);
   private static final org.apache.thrift.protocol.TField LOG_FIELD_DESC = new org.apache.thrift.protocol.TField("log", org.apache.thrift.protocol.TType.STRUCT, (short)5);
   private static final org.apache.thrift.protocol.TField SYNC_FIELD_DESC = new org.apache.thrift.protocol.TField("sync", org.apache.thrift.protocol.TType.STRUCT, (short)6);
+  private static final org.apache.thrift.protocol.TField METRIC_FIELD_DESC = new org.apache.thrift.protocol.TField("metric", org.apache.thrift.protocol.TType.STRUCT, (short)7);
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -50,7 +51,8 @@ public class ShellMsg extends org.apache.thrift.TUnion<ShellMsg, ShellMsg._Field
     EMIT((short)3, "emit"),
     PID((short)4, "pid"),
     LOG((short)5, "log"),
-    SYNC((short)6, "sync");
+    SYNC((short)6, "sync"),
+    METRIC((short)7, "metric");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -77,6 +79,8 @@ public class ShellMsg extends org.apache.thrift.TUnion<ShellMsg, ShellMsg._Field
           return LOG;
         case 6: // SYNC
           return SYNC;
+        case 7: // METRIC
+          return METRIC;
         default:
           return null;
       }
@@ -131,6 +135,8 @@ public class ShellMsg extends org.apache.thrift.TUnion<ShellMsg, ShellMsg._Field
         new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, LogCommand.class)));
     tmpMap.put(_Fields.SYNC, new org.apache.thrift.meta_data.FieldMetaData("sync", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, SyncReply.class)));
+    tmpMap.put(_Fields.METRIC, new org.apache.thrift.meta_data.FieldMetaData("metric", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, Metric.class)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(ShellMsg.class, metaDataMap);
   }
@@ -186,6 +192,12 @@ public class ShellMsg extends org.apache.thrift.TUnion<ShellMsg, ShellMsg._Field
     return x;
   }
 
+  public static ShellMsg metric(Metric value) {
+    ShellMsg x = new ShellMsg();
+    x.setMetric(value);
+    return x;
+  }
+
 
   @Override
   protected void checkType(_Fields setField, Object value) throws ClassCastException {
@@ -220,6 +232,11 @@ public class ShellMsg extends org.apache.thrift.TUnion<ShellMsg, ShellMsg._Field
           break;
         }
         throw new ClassCastException("Was expecting value of type SyncReply for field 'sync', but got " + value.getClass().getSimpleName());
+      case METRIC:
+        if (value instanceof Metric) {
+          break;
+        }
+        throw new ClassCastException("Was expecting value of type Metric for field 'metric', but got " + value.getClass().getSimpleName());
       default:
         throw new IllegalArgumentException("Unknown field id " + setField);
     }
@@ -290,6 +307,16 @@ public class ShellMsg extends org.apache.thrift.TUnion<ShellMsg, ShellMsg._Field
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, field.type);
             return null;
           }
+        case METRIC:
+          if (field.type == METRIC_FIELD_DESC.type) {
+            Metric metric;
+            metric = new Metric();
+            metric.read(iprot);
+            return metric;
+          } else {
+            org.apache.thrift.protocol.TProtocolUtil.skip(iprot, field.type);
+            return null;
+          }
         default:
           throw new IllegalStateException("setField wasn't null, but didn't match any of the case statements!");
       }
@@ -325,6 +352,10 @@ public class ShellMsg extends org.apache.thrift.TUnion<ShellMsg, ShellMsg._Field
       case SYNC:
         SyncReply sync = (SyncReply)value_;
         sync.write(oprot);
+        return;
+      case METRIC:
+        Metric metric = (Metric)value_;
+        metric.write(oprot);
         return;
       default:
         throw new IllegalStateException("Cannot write union with unknown field " + setField_);
@@ -366,6 +397,11 @@ public class ShellMsg extends org.apache.thrift.TUnion<ShellMsg, ShellMsg._Field
           sync = new SyncReply();
           sync.read(iprot);
           return sync;
+        case METRIC:
+          Metric metric;
+          metric = new Metric();
+          metric.read(iprot);
+          return metric;
         default:
           throw new IllegalStateException("setField wasn't null, but didn't match any of the case statements!");
       }
@@ -401,6 +437,10 @@ public class ShellMsg extends org.apache.thrift.TUnion<ShellMsg, ShellMsg._Field
         SyncReply sync = (SyncReply)value_;
         sync.write(oprot);
         return;
+      case METRIC:
+        Metric metric = (Metric)value_;
+        metric.write(oprot);
+        return;
       default:
         throw new IllegalStateException("Cannot write union with unknown field " + setField_);
     }
@@ -421,6 +461,8 @@ public class ShellMsg extends org.apache.thrift.TUnion<ShellMsg, ShellMsg._Field
         return LOG_FIELD_DESC;
       case SYNC:
         return SYNC_FIELD_DESC;
+      case METRIC:
+        return METRIC_FIELD_DESC;
       default:
         throw new IllegalArgumentException("Unknown field id " + setField);
     }
@@ -525,6 +567,20 @@ public class ShellMsg extends org.apache.thrift.TUnion<ShellMsg, ShellMsg._Field
     value_ = value;
   }
 
+  public Metric getMetric() {
+    if (getSetField() == _Fields.METRIC) {
+      return (Metric)getFieldValue();
+    } else {
+      throw new RuntimeException("Cannot get field 'metric' because union is currently set to " + getFieldDesc(getSetField()).name);
+    }
+  }
+
+  public void setMetric(Metric value) {
+    if (value == null) throw new NullPointerException();
+    setField_ = _Fields.METRIC;
+    value_ = value;
+  }
+
   public boolean isSetOk() {
     return setField_ == _Fields.OK;
   }
@@ -552,6 +608,11 @@ public class ShellMsg extends org.apache.thrift.TUnion<ShellMsg, ShellMsg._Field
 
   public boolean isSetSync() {
     return setField_ == _Fields.SYNC;
+  }
+
+
+  public boolean isSetMetric() {
+    return setField_ == _Fields.METRIC;
   }
 
 
